@@ -565,8 +565,8 @@
               "oneTimeLoading": false,
               // Used for TLS encryption / 用于 TLS 加密
               "usage": "encipherment",
-              "certificateFile": "/usr/local/etc/xray/fullchain.pem",
-              "keyFile": "/usr/local/etc/xray/privkey.pem"
+              "certificateFile": "/usr/local/etc/xray/fullchain.pem", # important: input the correct path for your 'fullchain.pem' certificate
+              "keyFile": "/usr/local/etc/xray/privkey.pem"  # important: input the correct path for your 'privkey.pem' key
             }
           ]
         }
