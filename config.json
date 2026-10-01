@@ -201,13 +201,17 @@
 
     // DNS outbound: intercepts DNS traffic and hands it to Xray's DNS module
     // DNS 出站：拦截 DNS 流量，交给 Xray 内置 DNS 模块处理
+    // example 1
     // {
     //   "tag": "dns-out",
     //   "protocol": "dns",
     //   "settings": {
-    //     // should I do udp or tcp, which one is better?
     //     // Override protocol / address / port of the upstream DNS server
     //     // 改写上游 DNS 服务器的协议 / 地址 / 端口
+    //        // Question: should I do udp or tcp, which one is better?
+    //        // Answer: udp is better, 
+    //        // reason: the inbounds "allowedNetwork": "tcp", has already stopped the DNS Amplification Attack, that is, we can't use "allowedNetwork": "udp" in that settings.
+    //        // 原因: 在入站中 "allowedNetwork": "tcp", 已经拦截了 DNS 放大攻击, 也就是，我们不能够使用 "allowedNetwork": "udp" 这个设置
     //     "rewriteNetwork": "udp",
     //     // "rewriteNetwork": "tcp",
     //     "rewriteAddress": "1.1.1.1",
@@ -230,6 +234,37 @@
     //     //     "domain": ["geosite:geolocation-!cn"]
     //     //   }
     //     // ]
+    //   }
+    // },
+    //  example 1 (a shorter setting case)
+    // {
+    //   "tag": "dns-out",
+    //   "protocol": "dns",
+    //   "settings": {
+    //     "rewriteNetwork": "udp",
+    //     "rewriteAddress": "1.1.1.1",
+    //     "rewritePort": 53,
+    //     "userLevel": 0
+    //   }
+    // },
+    // example 2 (deprecated)
+    // {
+    //   "tag": "dns-out",
+    //   "protocol": "dns",
+    //   "settings": {
+    //     "network": "tcp",
+    //     "address": "1.0.0.1",
+    //     "port": 53,
+    //     "nonIPQuery": "drop",
+    //     "blockTypes": []
+    //   },
+    //   "proxySettings": {
+    //     "tag": "direct"
+    //   },
+    //   "streamSettings": {
+    //     "sockopt": {
+    //       "mark": 2
+    //     }
     //   }
     // },
 
@@ -350,16 +385,15 @@
     // Rules are checked top to bottom; the first match wins
     // 规则从上往下检查，命中第一条即生效
     "rules": [
+        // 如果我只添加 模块 (module) inbounds 中对象 (object) "tag": "sniproxy-in" 的内容, 而不添加模块 (module) routing 和 outbounds 的内容, 那么 routing 规则和对应的 "outboundTag": "dns-out" object 可以不要吗？也能达到 DNS proxy 的目标？
       // {
       //   "type": "field",
       //   "inboundTag": ["sniproxy-in"],
-      //   "outboundTag": "dns-out"
+      //   "outboundTag": "dns-out" # optional: "outboundTag": "direct"
       // },
-      // // 如果我改成这个, 那么 routing 规则和对应的 outbound DNS "tag": "dns-out" object 可以不要吗？也能达到 DNS proxy 的目标？
-      // // "rewriteAddress": "1.1.1.1",
-      // // {
       // //   "type": "field",
       // //   "inboundTag": ["sniproxy-in"],
+      // //   "port": 53, # do we need this?
       // //   "outboundTag": "direct"
       // // },
 
@@ -588,6 +622,8 @@
 
     // Public DNS relay on port 53 (TCP only), sent to dns-out via routing
     // 对外的 DNS 中转，监听 53 端口（仅 TCP），经路由交给 dns-out
+    // Tunnel (dokodemo-door) module detailed settings
+      // url: https://xtls.github.io/config/inbounds/tunnel.html
     // {
     //   "tag": "sniproxy-in",
     //   "listen": "0.0.0.0",
@@ -596,21 +632,53 @@
     //   "settings": {
     //     "allowedNetwork": "tcp",
     //     "rewriteAddress": "127.0.0.1",
-    //     // 如果我改成这个, 那么 routing 规则和对应的 outbound DNS "tag": "dns-out" object 可以不要吗？也能达到 DNS proxy 的目标？
+    //       // 如果我改成 "rewriteAddress": "1.1.1.1", 那么 routing 规则和对应的 outbound DNS "tag": "dns-out" object 可以不要吗？也能达到 DNS proxy 的目标？
     //     // "rewriteAddress": "1.1.1.1",
     //     "rewritePort": 53,
     //     // Map different listening ports to different targets
     //     // 把不同监听端口映射到不同目标
-    //     // "portMap": {
-    //     //   "5555": "1.1.1.1:7777",
-    //     //   "5556": ":8888", // overrides port only
-    //     //   "5557": "example.com:" // overrides address only
-    //     // },
+    //     "portMap": {
+    //       "5555": "1.1.1.1:7777",
+    //       "5556": ":8888", // overrides port only
+    //       "5557": "example.com:" // overrides address only
+    //     },
     //     "followRedirect": false,
     //     "userLevel": 0
     //   }
     // },
+    // Tunnel (dokodemo-door) module brief settings
+    // {
+    //   "tag": "sniproxy-in",
+    //   "listen": "0.0.0.0", 
+    //   "port": 53,
+    //   "protocol": "tunnel",
+    //   "settings": {
+    //     "allowedNetwork": "tcp",
+    //     "rewriteAddress": "127.0.0.1",
+    //     "rewritePort": 53,
+    //     "followRedirect": false,
+    //     "userLevel": 0
+    //   }
+    // },
+    // Tunnel (dokodemo-door) module settings 2_older version (deprecated)
+    // {
+    //   "tag": "sniproxy-in",
+    //   "protocol": "dokodemo-door",
+    //   "address": "0.0.0.0",
+    //   "port": 53,
+    //   "settings": {
+    //     "address": "127.0.0.1",
+    //     "port": 53,
+    //     "network": "tcp",
+    //     "followRedirect": false
+    //   },  
+    //   "sniffing": {
+    //     "enabled": true,
+    //     "destOverride": ["http", "tls", "quic"]
+    //   }
+    // },
 
+    // xray api: detailed vesion
     // Local-only API entry for `xray api` commands
     // 仅本机可访问的 API 入口，供 `xray api` 命令使用
     // {
@@ -636,6 +704,7 @@
     //     "userLevel": 0
     //   }
     // }
+    // xray api: brief version
     {
       "tag": "api",
       "listen": "127.0.0.1",
@@ -645,7 +714,7 @@
         "rewriteAddress": "127.0.0.1"
       }
     }
-
+    // xray api: older version (deprecated)
     // Old-style API inbound using the dokodemo-door name
     // 旧写法：使用 dokodemo-door 名称的 API 入站
     // {
