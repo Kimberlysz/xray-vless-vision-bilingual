@@ -41,17 +41,18 @@
       // Forward DNS queries to another server over TCP
       // 通过 TCP 把 DNS 查询发送到指定 IP 服务器进行查询并返回
       // {
-      //   "address": "tcp://203.0.113.10:53",
+      //   "address": "tcp://38.244.11.21:53",  // important: input your DNS proxy server correct IP
       //   // DoH use port 443
       //   // "port": 53
       //   "domains": [
       //     "domain:mgmplus.com",
       //     "domain:philo.com",
       //     "domain:starz.com",
-      //     "domain:www.coupang.com",
-      //     "geosite:coupang",
-      //     "geosite:google-scholar",
-      //     "geosite:hulu"
+      //     "geosite:disney",
+      //     // "geosite:google-deepmind",
+      //     // "geosite:google-gemini",
+      //     "geosite:google",
+      //     "geosite:reddit"
       //   ],
       //   "skipFallback": true
       // },
@@ -59,6 +60,7 @@
       // Use only IPv4 to return
       // Resolve Google Gemini / DeepMind via Google DoH, return IPv4 only
       // 用 Google DoH 解析 Gemini / DeepMind 域名，只返回 IPv4
+        // for server region that gemini is not available, mark the following object
       {
         "address": "https://dns.google/dns-query",
         "domains": [
@@ -185,6 +187,7 @@
 
     // Direct connection for Gemini / DeepMind, IPv4 only; fails instead of falling back if no IPv4
     // Gemini / DeepMind 专用直连，只用 IPv4；没有 IPv4 结果时直接失败，不回退
+      // for server region that gemini is not available, mark the following object
     {
       "protocol": "freedom",
       "tag": "google-deepmind",
@@ -268,69 +271,25 @@
     //   }
     // },
 
-    // Cloudflare WARP via WireGuard: gives the server a Cloudflare exit IP
-    // 通过 WireGuard 连接 Cloudflare WARP：让服务器使用 Cloudflare 的出口 IP
+    // vnext configuration
+      // Chain to another VLESS server for Gemini / DeepMind
+      // 把 Gemini / DeepMind 流量转发到另一台 VLESS 服务器（链式代理）
+      // Note: certificates, rejectUnknownSni, sniffing and tcpSettings below are server/inbound options;
+      // a client outbound doesn't need them
+      // 注意：下面的 certificates、rejectUnknownSni、sniffing、tcpSettings 属于服务端/入站选项，
+      // 客户端出站不需要
+    //  vnext example_1
     // {
-    //   "protocol": "wireguard",
-    //   "settings": {
-    //     // WARP account private key / WARP 账户私钥
-    //     "secretKey": "YOUR_WARP_PRIVATE_KEY",
-    //     // Tunnel IPs assigned by WARP / WARP 分配的隧道内 IP
-    //     "address": [
-    //       "172.16.0.2/32",
-    //       "YOUR_WARP_IPV6/128"
-    //     ],
-    //     "peers": [
-    //       {
-    //         // Cloudflare's public key / Cloudflare 的公钥
-    //         "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-    //         // Send all IPv4 and IPv6 through the tunnel / 所有 IPv4 和 IPv6 都走隧道
-    //         "allowedIPs": [
-    //           "0.0.0.0/0",
-    //           "::/0"
-    //         ],
-    //         // WARP endpoint / WARP 接入点
-    //         "endpoint": "162.159.192.1:2408"
-    //       }
-    //     ],
-    //     // Use the kernel TUN when available / 可用时使用系统内核 TUN
-    //     "noKernelTun": false,
-    //     // WARP client ID bytes / WARP 客户端标识字节
-    //     "reserved":[ 0, 0, 0 ],
-    //     // Tunnel MTU / 隧道 MTU
-    //     // "mtu": 1280,
-    //     "mtu": 1420,
-    //     // DNS servers used inside the tunnel (check that your Xray version supports this key)
-    //     // 隧道内使用的 DNS（请确认你的 Xray 版本支持此字段）
-    //     "remoteDNS": [
-    //       "1.1.1.1",
-    //       "1.0.0.1",
-    //       "2606:4700:4700::1111",
-    //       "2606:4700:4700::1001"
-    //     ],
-    //     // Force IPv6 first, then IPv4 / 强制优先 IPv6，其次 IPv4
-    //     "domainStrategy": "ForceIPv6v4"
-    //   },
-    //   "tag": "warp"
-    // }
-
-    // Chain to another VLESS server for Gemini / DeepMind
-    // 把 Gemini / DeepMind 流量转发到另一台 VLESS 服务器（链式代理）
-    // Note: certificates, rejectUnknownSni, sniffing and tcpSettings below are server/inbound options;
-    // a client outbound doesn't need them
-    // 注意：下面的 certificates、rejectUnknownSni、sniffing、tcpSettings 属于服务端/入站选项，
-    // 客户端出站不需要
-    // {
-    //   "tag": "google-deepmind",
+    //   "tag": "vnext",
     //   "protocol": "vless",
     //   "settings": {
     //       "vnext": [
     //         {
-    //           "address": "chain.example.com",
+    //           "address": "chain.example.com",  // important: input your next node server domain name
     //           "port": 443,
     //           "users": [
     //             {
-    //               "id": "your_uuid",
+    //               "id": "your_uuid", // important: input your next node server UUID
     //               "encryption": "none",
     //               "flow": "xtls-rprx-vision",
     //               "level": 0
@@ -345,7 +304,7 @@
     //       "tlsSettings": {
     //         "rejectUnknownSni": true,
     //         "minVersion": "1.2",
-    //         "serverName": "chain.example.com",
+    //         "serverName": "chain.example.com", // important: input your next node server domain name
     //         "alpn": [
     //           "h2",
     //           "http/1.1"
@@ -371,6 +330,74 @@
     //     "destOverride": ["http", "tls", "quic"]
     //   }
     // },
+    //  vnext example 2_under verification
+    // {
+    //   "tag": "vnext",                      // 如果路由规则引用了这个名字就保留，否则可以改成更直观的 chain-out
+    //   "protocol": "vless",
+    //   "settings": {
+    //     "address": "chain.example.com",   // 下一跳的域名
+    //     "port": 443,
+    //     "id": "your_uuid",                // 下一跳的 UUID
+    //     "encryption": "none",
+    //     "flow": "xtls-rprx-vision",
+    //     "level": 0
+    //   },
+    //   "streamSettings": {
+    //     "network": "raw",
+    //     "security": "tls",
+    //     "tlsSettings": {
+    //       "serverName": "chain.example.com",
+    //       "fingerprint": "chrome",
+    //       "minVersion": "1.2"
+    //     }
+    //   }
+    // },
+
+    // Cloudflare WARP via WireGuard: gives the server a Cloudflare exit IP
+    // 通过 WireGuard 连接 Cloudflare WARP：让服务器使用 Cloudflare 的出口 IP
+    // {
+    //   "protocol": "wireguard",
+    //   "settings": {
+    //     // WARP account private key / WARP 账户私钥
+    //     "secretKey": "YOUR_WARP_PRIVATE_KEY",
+    //     // Tunnel IPs assigned by WARP / WARP 分配的隧道内 IP
+    //     "address": [
+    //       "172.16.0.2/32",
+    //       "YOUR_WARP_IPV6/128"
+    //     ],
+    //     "peers": [
+    //       {
+    //         // WARP endpoint / WARP 接入点
+    //         "endpoint": "162.159.192.1:2408",
+    //         // Cloudflare's public key / Cloudflare 的公钥
+    //         "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+    //         // Send all IPv4 and IPv6 through the tunnel / 所有 IPv4 和 IPv6 都走隧道
+    //         "allowedIPs": [
+    //           "0.0.0.0/0",
+    //           "::/0"
+    //         ]
+    //       }
+    //     ],
+    //     // Use the kernel TUN when available / 可用时使用系统内核 TUN
+    //     "noKernelTun": false,
+    //     // Tunnel MTU / 隧道 MTU
+    //     // "mtu": 1280,
+    //     "mtu": 1420,
+    //     // WARP client ID bytes / WARP 客户端标识字节
+    //     "reserved":[ 0, 0, 0 ],
+    //     // DNS servers used inside the tunnel (check that your Xray version supports this key)
+    //     // 隧道内使用的 DNS（请确认你的 Xray 版本支持此字段）
+    //     "remoteDNS": [
+    //       "1.1.1.1",
+    //       "1.0.0.1",
+    //       "2606:4700:4700::1111",
+    //       "2606:4700:4700::1001"
+    //     ]
+    //     // Force IPv6 first, then IPv4 / 强制优先 IPv6，其次 IPv4
+    //     // "domainStrategy": "ForceIPv6v4"
+    //   },
+    //   "tag": "warp"
+    // }
   ],
 
   // Routing: decides which outbound each connection uses
@@ -389,11 +416,11 @@
       // {
       //   "type": "field",
       //   "inboundTag": ["sniproxy-in"],
-      //   "outboundTag": "dns-out" # optional: "outboundTag": "direct"
+      //   "outboundTag": "dns-out" // optional: "outboundTag": "direct"
       // },
       // //   "type": "field",
       // //   "inboundTag": ["sniproxy-in"],
-      // //   "port": 53, # do we need this?
+      // //   "port": 53, // do we need this?
       // //   "outboundTag": "direct"
       // // },
 
@@ -434,6 +461,7 @@
       },
       // Send Gemini / DeepMind to the IPv4-only outbound
       // Gemini / DeepMind 走只用 IPv4 的出站
+        // for server region that gemini is not available, mark the following object
       {
         "type": "field",
         "domain": [
@@ -444,17 +472,27 @@
       },
       // Send streaming / AI sites through WARP
       // 流媒体和 AI 网站走 WARP
+        // for server region that gemini is not available, unmark the following object items relate to google-deepmind
       // {
       //   "type": "field",
       //   "domain": [
-      //     "geosite:reddit",
-      //     "geosite:perplexity",
-      //     "geosite:openai",
-      //     "geosite:netflix",
-      //     "geosite:hbo",
-      //     "geosite:disney"
+      //     "domain:mgmplus.com",
+      //     "domain:philo.com",
+      //     "domain:starz.com",
+      //     "geosite:disney",
+      //     for servers that gemini doesn't support the region
+      //     // "geosite:google-deepmind",
+      //     // "geosite:google-gemini",
+      //     for servers that HBO Max buffers a lot
+      //     // "geosite:hbomax",
+      //     for servers that netflix thinks you using vpn
+      //     // "geosite:netflix",
+      //     "geosite:google",
+      //     "geosite:reddit"
       //   ],
       //   "outboundTag": "warp"
+        // can change to vnext for sending these requests to next node server
+      //   "outboundTag": "vnext"
       // },
 
       // Block private / LAN IPs (prevents access to the server's internal network)
@@ -534,20 +572,20 @@
           {
             "email": "e0@yahoo.com",
             // Input your UUID here / 在此填入你的 UUID
-            "id": "your_uuid1", # important: input your UUID here
+            "id": "your_uuid1", // important: input your UUID here
             // XTLS Vision flow control / XTLS Vision 流控
             "flow": "xtls-rprx-vision",
             "level": 0
           },
           {
             "email": "e1@yahoo.com",
-            "id": "your_uuid2", # important: input your UUID here
+            "id": "your_uuid2", // important: input your UUID here
             "flow": "xtls-rprx-vision",
             "level": 0
           },
           {
             "email": "e2@yahoo.com",
-            "id": "your_uuid3", # important: input your UUID here
+            "id": "your_uuid3", // important: input your UUID here
             "flow": "xtls-rprx-vision",
             "level": 0
           }
@@ -580,7 +618,7 @@
           "rejectUnknownSni": true,
           // Minimum TLS version / 最低 TLS 版本
           "minVersion": "1.2",
-          "serverName": "your.domain.com", # important: input your domain
+          "serverName": "your.domain.com", // important: input your domain
           // Protocols offered in the TLS handshake / TLS 握手时协商的协议
           "alpn": [
             "h2",
@@ -599,8 +637,8 @@
               "oneTimeLoading": false,
               // Used for TLS encryption / 用于 TLS 加密
               "usage": "encipherment",
-              "certificateFile": "/usr/local/etc/xray/fullchain.pem", # important: input the correct path for your 'fullchain.pem' certificate
-              "keyFile": "/usr/local/etc/xray/privkey.pem"  # important: input the correct path for your 'privkey.pem' key
+              "certificateFile": "/usr/local/etc/xray/fullchain.pem", // important: input the correct path for your 'fullchain.pem' certificate
+              "keyFile": "/usr/local/etc/xray/privkey.pem"  // important: input the correct path for your 'privkey.pem' key
             }
           ]
         }
