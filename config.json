@@ -3,13 +3,13 @@
   // 日志设置
   "log": {
     // Access log path: records every connection
-    // 访问日志路径：记录每一条连接
+    // 访问日志路径: 记录每一条连接
     "access": "/var/log/xray/access.log",
     // Error log path: records runtime errors and warnings
-    // 错误日志路径：记录运行错误和警告
+    // 错误日志路径: 记录运行错误和警告
     "error": "/var/log/xray/error.log",
     // Log level: debug / info / warning / error / none
-    // 日志级别：debug / info / warning / error / none
+    // 日志级别: debug / info / warning / error / none
     "loglevel": "warning",
     // Whether to log DNS queries
     // 是否记录 DNS 查询日志
@@ -17,10 +17,10 @@
   },
 
   // API: lets external tools (xray api) query stats and manage users at runtime
-  // API：允许外部工具（xray api 命令）在运行时查询流量统计、管理用户
+  // API: 允许外部工具（xray api 命令）在运行时查询流量统计、管理用户
   "api": {
     // Outbound tag for API traffic; matched by the "api" routing rule below
-    // API 流量的出站标签，由下方 routing 中的 api 规则匹配
+    // API 流量的出站标签, 由下方 routing 中的 api 规则匹配
     "tag": "api",
     "services": [
       // Traffic statistics / 流量统计
@@ -33,10 +33,10 @@
   },
 
   // Built-in DNS module: used for routing decisions and by outbounds that resolve domains
-  // 内置 DNS 模块：供路由判断和出站解析域名时使用
+  // 内置 DNS 模块: 供路由判断和出站解析域名时使用
   "dns": {
     // Server list, matched top to bottom; entries with "domains" are tried first for matching domains
-    // 服务器列表，从上往下匹配；带 "domains" 的条目优先用于对应域名
+    // 服务器列表, 从上往下匹配；带 "domains" 的条目优先用于对应域名
     "servers": [
       // Forward DNS queries to another server over TCP
       // 通过 TCP 把 DNS 查询发送到指定 IP 服务器进行查询并返回
@@ -49,8 +49,13 @@
       //     "domain:philo.com",
       //     "domain:starz.com",
       //     "geosite:disney",
+      //     for servers that gemini doesn't support the region
       //     // "geosite:google-deepmind",
       //     // "geosite:google-gemini",
+      //     for servers that HBO Max buffers a lot
+      //     // "geosite:hbo",
+      //     for servers that netflix thinks you using vpn
+      //     // "geosite:netflix",
       //     "geosite:google",
       //     "geosite:reddit"
       //   ],
@@ -59,7 +64,7 @@
 
       // Use only IPv4 to return
       // Resolve Google Gemini / DeepMind via Google DoH, return IPv4 only
-      // 用 Google DoH 解析 Gemini / DeepMind 域名，只返回 IPv4
+      // 用 Google DoH 解析 Gemini / DeepMind 域名, 只返回 IPv4
         // for server region that gemini is not available, mark the following object
       {
         "address": "https://dns.google/dns-query",
@@ -68,12 +73,12 @@
           "geosite:google-gemini"
         ],
         // Do not use this server for domains outside the list above
-        // 不在上面列表中的域名，不会用到这台服务器
+        // 不在上面列表中的域名, 不会用到这台服务器
         "skipFallback": true,
         "queryStrategy": "UseIPv4"
       },
       // Resolve Perplexity / Netflix / bgp.he.net via Cloudflare DoH, IPv4 only
-      // 用 Cloudflare DoH 解析 Perplexity / Netflix / bgp.he.net，只返回 IPv4
+      // 用 Cloudflare DoH 解析 Perplexity / Netflix / bgp.he.net, 只返回 IPv4
       {
         "address": "https://cloudflare-dns.com/dns-query",
         "domains": [
@@ -85,7 +90,7 @@
         "queryStrategy": "UseIPv4"
       },
       // Resolve OpenAI via Cloudflare DoH, IPv6 only
-      // 用 Cloudflare DoH 解析 OpenAI，只返回 IPv6
+      // 用 Cloudflare DoH 解析 OpenAI, 只返回 IPv6
       {
         "address": "https://cloudflare-dns.com/dns-query",
         "domains": ["geosite:openai"],
@@ -107,7 +112,7 @@
         "expectIPs": ["geoip:cn"]
       },
       // Fallback servers for everything else, tried in order
-      // 其余域名的兜底服务器，按顺序尝试
+      // 其余域名的兜底服务器, 按顺序尝试
       // Cloudflare plain DNS (UDP) / Cloudflare 普通 DNS（UDP）
       "1.0.0.1",
       // Cloudflare DoH / Cloudflare DNS over HTTPS
@@ -116,19 +121,19 @@
       "8.8.8.8",
       // Google DoH / Google DNS over HTTPS
       "https://dns.google/dns-query",
-      // Google DNS over TLS (DoT, port 853) / Google DNS over TLS（DoT，853 端口）
+      // Google DNS over TLS (DoT, port 853) / Google DNS over TLS（DoT, 853 端口）
       "tls://dns.google",
       // cisco DNS
-      // Cisco OpenDNS over TCP on alternate port 443 / Cisco OpenDNS，走 TCP 443 备用端口
+      // Cisco OpenDNS over TCP on alternate port 443 / Cisco OpenDNS, 走 TCP 443 备用端口
       "tcp://208.67.222.222:443",
-      // System resolver as the last resort / 最后兜底：系统 DNS
+      // System resolver as the last resort / 最后兜底: 系统 DNS
       "localhost"
     ],
     // Client IP sent via EDNS Client Subnet, helps CDNs return nearby nodes
-    // 通过 EDNS Client Subnet 告知 DNS 服务器客户端 IP，便于 CDN 返回就近节点
+    // 通过 EDNS Client Subnet 告知 DNS 服务器客户端 IP, 便于 CDN 返回就近节点
     // "clientIp": "1.2.3.4",
     // Default query type: UseIP = both IPv4 and IPv6
-    // 默认查询类型：UseIP = 同时查 IPv4 和 IPv6
+    // 默认查询类型: UseIP = 同时查 IPv4 和 IPv6
     "queryStrategy": "UseIP",
     // Keep DNS cache enabled
     // 保留 DNS 缓存
@@ -143,21 +148,21 @@
     // 查询失败时允许回退到其他服务器
     "disableFallback": false,
     // Allow fallback even when the domain matched a server's "domains" list
-    // 即使域名命中了某台服务器的 "domains" 列表，也允许回退
+    // 即使域名命中了某台服务器的 "domains" 列表, 也允许回退
     "disableFallbackIfMatch": false,
     // Query servers one at a time instead of all at once
-    // 逐个查询服务器，而不是同时并发查询
+    // 逐个查询服务器, 而不是同时并发查询
     "enableParallelQuery": false,
     // Ignore the system hosts file (/etc/hosts)
     // 不读取系统 hosts 文件（/etc/hosts）
     "useSystemHosts": false,
     // Inbound tag for DNS queries made by Xray itself; can be matched in routing
-    // Xray 自身发出的 DNS 查询所带的入站标签，可在路由中匹配
+    // Xray 自身发出的 DNS 查询所带的入站标签, 可在路由中匹配
     "tag": "dns_inbound"
   },
 
   // Outbounds: where traffic leaves the server
-  // 出站：流量从服务器发出去的方式
+  // 出站: 流量从服务器发出去的方式
   "outbounds": [
     // {
     //   "protocol": "freedom",
@@ -168,7 +173,7 @@
     // },
 
     // Direct connection; resolve domains with the built-in DNS, prefer IPv4 then IPv6
-    // 直连出站；用内置 DNS 解析域名，优先 IPv4、其次 IPv6
+    // 直连出站；用内置 DNS 解析域名, 优先 IPv4、其次 IPv6
     {
       "protocol": "freedom",
       "tag": "direct",
@@ -186,7 +191,7 @@
     // },
 
     // Direct connection for Gemini / DeepMind, IPv4 only; fails instead of falling back if no IPv4
-    // Gemini / DeepMind 专用直连，只用 IPv4；没有 IPv4 结果时直接失败，不回退
+    // Gemini / DeepMind 专用直连, 只用 IPv4；没有 IPv4 结果时直接失败, 不回退
       // for server region that gemini is not available, mark the following object
     {
       "protocol": "freedom",
@@ -196,14 +201,14 @@
       }
     },
     // Blackhole: silently drop traffic
-    // 黑洞：直接丢弃流量
+    // 黑洞: 直接丢弃流量
     {
       "protocol": "blackhole",
       "tag": "block"
-    }
+    },
 
     // DNS outbound: intercepts DNS traffic and hands it to Xray's DNS module
-    // DNS 出站：拦截 DNS 流量，交给 Xray 内置 DNS 模块处理
+    // DNS 出站: 拦截 DNS 流量, 交给 Xray 内置 DNS 模块处理
     // example 1
     // {
     //   "tag": "dns-out",
@@ -214,14 +219,14 @@
     //        // Question: should I do udp or tcp, which one is better?
     //        // Answer: udp is better, 
     //        // reason: the inbounds "allowedNetwork": "tcp", has already stopped the DNS Amplification Attack, that is, we can't use "allowedNetwork": "udp" in that settings.
-    //        // 原因: 在入站中 "allowedNetwork": "tcp", 已经拦截了 DNS 放大攻击, 也就是，我们不能够使用 "allowedNetwork": "udp" 这个设置
+    //        // 原因: 在入站中 "allowedNetwork": "tcp", 已经拦截了 DNS 放大攻击, 也就是, 我们不能够使用 "allowedNetwork": "udp" 这个设置
     //     "rewriteNetwork": "udp",
     //     // "rewriteNetwork": "tcp",
     //     "rewriteAddress": "1.1.1.1",
     //     "rewritePort": 53,
     //     "userLevel": 0
     //     // Per-query rules: return an error code, or pass through untouched
-    //     // 按查询设置规则：直接返回错误码，或原样放行
+    //     // 按查询设置规则: 直接返回错误码, 或原样放行
     //     // "rules": [
     //     //   {
     //     //     // Reply REFUSED (rCode 5) for example.com / 对 example.com 返回 REFUSED（rCode 5）
@@ -276,7 +281,7 @@
       // 把 Gemini / DeepMind 流量转发到另一台 VLESS 服务器（链式代理）
       // Note: certificates, rejectUnknownSni, sniffing and tcpSettings below are server/inbound options;
       // a client outbound doesn't need them
-      // 注意：下面的 certificates、rejectUnknownSni、sniffing、tcpSettings 属于服务端/入站选项，
+      // 注意: 下面的 certificates、rejectUnknownSni、sniffing、tcpSettings 属于服务端/入站选项, 
       // 客户端出站不需要
     //  vnext example_1
     // {
@@ -332,7 +337,7 @@
     // },
     //  vnext example 2_under verification
     // {
-    //   "tag": "vnext",                      // 如果路由规则引用了这个名字就保留，否则可以改成更直观的 chain-out
+    //   "tag": "vnext",                      // 如果路由规则引用了这个名字就保留, 否则可以改成更直观的 chain-out
     //   "protocol": "vless",
     //   "settings": {
     //     "address": "chain.example.com",   // 下一跳的域名
@@ -354,63 +359,63 @@
     // },
 
     // Cloudflare WARP via WireGuard: gives the server a Cloudflare exit IP
-    // 通过 WireGuard 连接 Cloudflare WARP：让服务器使用 Cloudflare 的出口 IP
-    // {
-    //   "protocol": "wireguard",
-    //   "settings": {
-    //     // WARP account private key / WARP 账户私钥
-    //     "secretKey": "YOUR_WARP_PRIVATE_KEY",
-    //     // Tunnel IPs assigned by WARP / WARP 分配的隧道内 IP
-    //     "address": [
-    //       "172.16.0.2/32",
-    //       "YOUR_WARP_IPV6/128"
-    //     ],
-    //     "peers": [
-    //       {
-    //         // WARP endpoint / WARP 接入点
-    //         "endpoint": "162.159.192.1:2408",
-    //         // Cloudflare's public key / Cloudflare 的公钥
-    //         "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-    //         // Send all IPv4 and IPv6 through the tunnel / 所有 IPv4 和 IPv6 都走隧道
-    //         "allowedIPs": [
-    //           "0.0.0.0/0",
-    //           "::/0"
-    //         ]
-    //       }
-    //     ],
-    //     // Use the kernel TUN when available / 可用时使用系统内核 TUN
-    //     "noKernelTun": false,
-    //     // Tunnel MTU / 隧道 MTU
-    //     // "mtu": 1280,
-    //     "mtu": 1420,
-    //     // WARP client ID bytes / WARP 客户端标识字节
-    //     "reserved":[ 0, 0, 0 ],
-    //     // DNS servers used inside the tunnel (check that your Xray version supports this key)
-    //     // 隧道内使用的 DNS（请确认你的 Xray 版本支持此字段）
-    //     "remoteDNS": [
-    //       "1.1.1.1",
-    //       "1.0.0.1",
-    //       "2606:4700:4700::1111",
-    //       "2606:4700:4700::1001"
-    //     ]
-    //     // Force IPv6 first, then IPv4 / 强制优先 IPv6，其次 IPv4
-    //     // "domainStrategy": "ForceIPv6v4"
-    //   },
-    //   "tag": "warp"
-    // }
+    // 通过 WireGuard 连接 Cloudflare WARP: 让服务器使用 Cloudflare 的出口 IP
+    {
+      "protocol": "wireguard",
+      "settings": {
+        // WARP account private key / WARP 账户私钥
+        "secretKey": "YOUR_WARP_PRIVATE_KEY",  // input your_secretKey
+        // Tunnel IPs assigned by WARP / WARP 分配的隧道内 IP
+        "address": [
+          "172.16.0.2/32",
+          "YOUR_WARP_IPV6/128"  // input your correct ipv6 addr
+        ],
+        "peers": [
+          {
+            // WARP endpoint / WARP 接入点
+            "endpoint": "162.159.192.1:2408",
+            // Cloudflare's public key / Cloudflare 的公钥
+            "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+            // Send all IPv4 and IPv6 through the tunnel / 所有 IPv4 和 IPv6 都走隧道
+            "allowedIPs": [
+              "0.0.0.0/0",
+              "::/0"
+            ]
+          }
+        ],
+        // Use the kernel TUN when available / 可用时使用系统内核 TUN
+        "noKernelTun": false,
+        // Tunnel MTU / 隧道 MTU
+        // "mtu": 1280,
+        "mtu": 1420,
+        // WARP client ID bytes / WARP 客户端标识字节
+        "reserved":[ 0, 0, 0 ], // input your correct reserved keys
+        // DNS servers used inside the tunnel (check that your Xray version supports this key)
+        // 隧道内使用的 DNS（请确认你的 Xray 版本支持此字段）
+        "remoteDNS": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ]
+        // Force IPv6 first, then IPv4 / 强制优先 IPv6, 其次 IPv4
+        // "domainStrategy": "ForceIPv6v4"
+      },
+      "tag": "warp"
+    }
   ],
 
   // Routing: decides which outbound each connection uses
-  // 路由：决定每条连接走哪个出站
+  // 路由: 决定每条连接走哪个出站
   "routing": {
     // Match domain rules first; if none match, resolve to IP and match IP rules
-    // 先按域名规则匹配；都不命中时再解析成 IP，按 IP 规则匹配
+    // 先按域名规则匹配；都不命中时再解析成 IP, 按 IP 规则匹配
     "domainStrategy": "IPIfNonMatch",
     // Domain matching algorithm; hybrid is faster and uses less memory
     // 域名匹配算法；hybrid 更快、更省内存
     "domainMatcher": "hybrid",
     // Rules are checked top to bottom; the first match wins
-    // 规则从上往下检查，命中第一条即生效
+    // 规则从上往下检查, 命中第一条即生效
     "rules": [
         // 如果我只添加 模块 (module) inbounds 中对象 (object) "tag": "sniproxy-in" 的内容, 而不添加模块 (module) routing 和 outbounds 的内容, 那么 routing 规则和对应的 "outboundTag": "dns-out" object 可以不要吗？也能达到 DNS proxy 的目标？
       // {
@@ -484,7 +489,7 @@
       //     // "geosite:google-deepmind",
       //     // "geosite:google-gemini",
       //     for servers that HBO Max buffers a lot
-      //     // "geosite:hbomax",
+      //     // "geosite:hbo",
       //     for servers that netflix thinks you using vpn
       //     // "geosite:netflix",
       //     "geosite:google",
@@ -494,7 +499,16 @@
         // can change to vnext for sending these requests to next node server
       //   "outboundTag": "vnext"
       // },
-
+        // shorter version of the above object
+      {
+        "type": "field",
+        "domain": [
+          // "geosite:disney",
+          "geosite:hbo",
+          "geosite:netflix"
+        ],
+        "outboundTag": "warp"
+      },
       // Block private / LAN IPs (prevents access to the server's internal network)
       // 屏蔽私有 / 局域网 IP（防止访问服务器内网）
       {
@@ -503,7 +517,7 @@
         "outboundTag": "block"
       },
       // Block China IPs (China sites should be accessed directly, not via this server)
-      // 屏蔽中国 IP（国内网站应直连，不经过这台服务器）
+      // 屏蔽中国 IP（国内网站应直连, 不经过这台服务器）
       {
         "type": "field",
         "ip": ["geoip:cn"],
@@ -524,7 +538,7 @@
   },
 
   // Policy: timeouts, buffers and stats per user level
-  // 策略：按用户等级设置超时、缓冲和统计
+  // 策略: 按用户等级设置超时、缓冲和统计
   "policy": {
     "levels": {
       // Applies to users with "level": 0
@@ -556,10 +570,10 @@
   },
 
   // Inbounds: where the server accepts connections
-  // 入站：服务器接收连接的方式
+  // 入站: 服务器接收连接的方式
   "inbounds": [
     // Main VLESS + XTLS Vision + TLS inbound on port 443
-    // 主入站：VLESS + XTLS Vision + TLS，监听 443 端口
+    // 主入站: VLESS + XTLS Vision + TLS, 监听 443 端口
     {
       "tag": "A0",
       // Listen on all IPv4 addresses / 监听所有 IPv4 地址
@@ -597,7 +611,7 @@
         "fallbacks": [
           {
             // HTTP/1.1 -> port 23332, with PROXY protocol v2 to pass the real client IP
-            // HTTP/1.1 -> 23332 端口，附带 PROXY protocol v2 传递真实客户端 IP
+            // HTTP/1.1 -> 23332 端口, 附带 PROXY protocol v2 传递真实客户端 IP
             "dest": 23332,
             "xver": 2
           },
@@ -625,7 +639,7 @@
             "http/1.1"
           ],
           // Client-side options; no effect on a server inbound
-          // 客户端选项，在服务端入站中无作用
+          // 客户端选项, 在服务端入站中无作用
           "allowInsecure": false,
           "disableSystemRoot": false,
           "certificates": [
@@ -633,7 +647,7 @@
               // Refresh OCSP stapling every 3600 s / 每 3600 秒刷新 OCSP 装订
               "ocspStapling": 3600,
               // Keep watching the cert files so renewals take effect without restart
-              // 持续监视证书文件，续签后无需重启即可生效
+              // 持续监视证书文件, 续签后无需重启即可生效
               "oneTimeLoading": false,
               // Used for TLS encryption / 用于 TLS 加密
               "usage": "encipherment",
@@ -646,12 +660,12 @@
       // Whether to accept PROXY protocol from a front proxy (e.g. Nginx/HAProxy)
       // Note: to take effect it should sit inside streamSettings; false is the default anyway
       // 是否接收前置代理（如 Nginx/HAProxy）发来的 PROXY protocol
-      // 注意：要生效需放在 streamSettings 里面；false 本来就是默认值
+      // 注意: 要生效需放在 streamSettings 里面；false 本来就是默认值
       "tcpSettings": {
         "acceptProxyProtocol": false
       },
       // Sniff the real domain from traffic so domain-based routing rules work
-      // 从流量中嗅探真实域名，让基于域名的路由规则生效
+      // 从流量中嗅探真实域名, 让基于域名的路由规则生效
       "sniffing": {
         "enabled": true,
         "destOverride": ["http", "tls", "quic"]
@@ -659,7 +673,7 @@
     },
 
     // Public DNS relay on port 53 (TCP only), sent to dns-out via routing
-    // 对外的 DNS 中转，监听 53 端口（仅 TCP），经路由交给 dns-out
+    // 对外的 DNS 中转, 监听 53 端口（仅 TCP）, 经路由交给 dns-out
     // Tunnel (dokodemo-door) module detailed settings
       // url: https://xtls.github.io/config/inbounds/tunnel.html
     // {
@@ -718,7 +732,7 @@
 
     // xray api: detailed vesion
     // Local-only API entry for `xray api` commands
-    // 仅本机可访问的 API 入口，供 `xray api` 命令使用
+    // 仅本机可访问的 API 入口, 供 `xray api` 命令使用
     // {
     //   "tag": "api",
     //   "listen": "127.0.0.1",
@@ -754,7 +768,7 @@
     }
     // xray api: older version (deprecated)
     // Old-style API inbound using the dokodemo-door name
-    // 旧写法：使用 dokodemo-door 名称的 API 入站
+    // 旧写法: 使用 dokodemo-door 名称的 API 入站
     // {
     //   "tag": "api",
     //   "listen": "127.0.0.1",
