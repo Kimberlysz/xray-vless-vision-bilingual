@@ -4,7 +4,7 @@ xray-vless-vision-bilingual
 An Xray-core server configuration template (VLESS + XTLS Vision + TLS)
 with every setting explained in both English and Chinese.
 
-一个 Xray-core 服务端配置模板（VLESS + XTLS Vision + TLS），
+一个 Xray-core 服务端配置模板（VLESS + XTLS Vision + TLS）, 
 每一项配置都附有中英文双语注释。
 
 
@@ -18,8 +18,8 @@ README.txt    This file / 本说明文件
 Xray accepts // comments in its JSON config, so the file can be used as-is.
 GitHub may highlight the comments as syntax errors; that is expected.
 
-Xray 支持在 JSON 配置中使用 // 注释，文件可直接使用。
-GitHub 可能会把注释标红为语法错误，属于正常现象。
+Xray 支持在 JSON 配置中使用 // 注释, 文件可直接使用。
+GitHub 可能会把注释标红为语法错误, 属于正常现象。
 
 
 FEATURES / 功能
@@ -27,13 +27,13 @@ FEATURES / 功能
 
 - VLESS + XTLS Vision + TLS inbound on port 443, with fallbacks to a local
   web server so the port looks like a normal HTTPS site
-  443 端口 VLESS + XTLS Vision + TLS 入站，非代理流量回落到本地网站，伪装成普通 HTTPS 站点
+  443 端口 VLESS + XTLS Vision + TLS 入站, 非代理流量回落到本地网站, 伪装成普通 HTTPS 站点
 
 - Per-domain DNS: Gemini / DeepMind via Google DoH (IPv4 only),
   Netflix / Perplexity via Cloudflare DoH (IPv4 only), OpenAI via
   Cloudflare DoH (IPv6 only), China domains via AliDNS
-  按域名分流 DNS：Gemini / DeepMind 走 Google DoH（仅 IPv4），
-  Netflix / Perplexity 走 Cloudflare DoH（仅 IPv4），OpenAI 走 Cloudflare DoH（仅 IPv6），
+  按域名分流 DNS：Gemini / DeepMind 走 Google DoH（仅 IPv4）, 
+  Netflix / Perplexity 走 Cloudflare DoH（仅 IPv4）, OpenAI 走 Cloudflare DoH（仅 IPv6）, 
   国内域名走阿里 DNS
 
 - Blocks BitTorrent, private / LAN addresses, China IPs, Steam downloads
@@ -61,12 +61,12 @@ REQUIREMENTS / 环境要求
 
 - A domain pointing to the server, and a TLS certificate for it
   (e.g. from Let's Encrypt)
-  一个解析到服务器的域名，以及该域名的 TLS 证书（如 Let's Encrypt）
+  一个解析到服务器的域名, 以及该域名的 TLS 证书（如 Let's Encrypt）
 
 - A web server (e.g. Nginx) listening on 127.0.0.1:23332 (HTTP/1.1) and
   127.0.0.1:23333 (HTTP/2), with PROXY protocol enabled, to receive fallbacks
-  一个网站服务（如 Nginx），监听 127.0.0.1:23332（HTTP/1.1）和 127.0.0.1:23333（HTTP/2），
-  并开启 PROXY protocol，用于接收回落流量
+  一个网站服务（如 Nginx）, 监听 127.0.0.1:23332（HTTP/1.1）和 127.0.0.1:23333（HTTP/2）, 
+  并开启 PROXY protocol, 用于接收回落流量
 
 
 QUICK START / 快速开始
@@ -83,7 +83,7 @@ QUICK START / 快速开始
    xray uuid
 
 3. Edit config.json and replace the placeholders
-   编辑 config.json，替换以下占位符
+   编辑 config.json, 替换以下占位符
 
    your_uuid1 / your_uuid2 / your_uuid3   -> UUIDs from step 2 / 第 2 步生成的 UUID
    your.domain.com                        -> your domain / 你的域名
@@ -126,7 +126,7 @@ SECURITY NOTES / 安全提示
 
 - If you enable the public DNS relay on port 53, keep it TCP only.
   Open UDP resolvers are abused for DNS amplification attacks.
-  如果启用 53 端口 DNS 中转，只开 TCP。开放的 UDP 解析器会被用于 DNS 放大攻击。
+  如果启用 53 端口 DNS 中转, 只开 TCP。开放的 UDP 解析器会被用于 DNS 放大攻击。
 
 
 REFERENCES / 参考
